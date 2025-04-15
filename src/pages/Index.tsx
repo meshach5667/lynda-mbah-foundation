@@ -1,13 +1,39 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import { Helmet } from "react-helmet";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
+import Hero from "@/components/home/Hero";
+import About from "@/components/home/About";
+import Programs from "@/components/home/Programs";
+import Impact from "@/components/home/Impact";
+import Donate from "@/components/home/Donate";
+import Team from "@/components/home/Team";
+import News from "@/components/home/News";
+import Contact from "@/components/home/Contact";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <>
+      <Helmet>
+        <title>Lynda Mbah Foundation - Empowering Communities</title>
+        <meta name="description" content="The Lynda Mbah Foundation is dedicated to sustainable development, education, healthcare, and community empowerment across underserved regions." />
+      </Helmet>
+      
+      <Navbar />
+      
+      <main>
+        <Hero />
+        <About />
+        <Programs />
+        <Impact />
+        <Donate />
+        <Team />
+        <News />
+        <Contact />
+      </main>
+      
+      <Footer />
+    </>
   );
 };
 
