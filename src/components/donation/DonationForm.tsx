@@ -1,16 +1,24 @@
-
-import React, { useState } from 'react';
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import * as z from "zod"
+import React, { useState, useEffect } from 'react';
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import * as z from "zod";
 import { toast } from "sonner";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Card, CardContent } from "@/components/ui/card"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { Heart, CreditCard } from 'lucide-react';
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import {
+  RadioGroup,
+  RadioGroupItem
+} from "@/components/ui/radio-group";
 
 const donationSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -23,7 +31,7 @@ const donationSchema = z.object({
   paymentMethod: z.enum(["credit_card", "paypal", "bank_transfer"], {
     required_error: "Please select a payment method.",
   }),
-})
+});
 
 interface DonationFormProps {
   projectId?: string;
@@ -34,7 +42,8 @@ interface DonationFormProps {
 const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  
+  const [hasTransferred, setHasTransferred] = useState(false);
+
   const form = useForm<z.infer<typeof donationSchema>>({
     resolver: zodResolver(donationSchema),
     defaultValues: {
@@ -46,19 +55,26 @@ const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) 
     },
   });
 
+  const selectedMethod = form.watch("paymentMethod");
+
+  useEffect(() => {
+    if (selectedMethod !== "bank_transfer") {
+      setHasTransferred(false);
+    }
+  }, [selectedMethod]);
+
   const handleDonation = (values: z.infer<typeof donationSchema>) => {
     setIsProcessing(true);
-    
+
     // Simulate donation processing
     setTimeout(() => {
       setIsProcessing(false);
       setIsSuccess(true);
-      
-      // Show success toast
+
       toast.success("Donation successful", {
         description: `Thank you for your $${values.amount} donation${projectName ? ` to ${projectName}` : ''}!`,
       });
-      
+
       if (onSuccess) {
         onSuccess();
       }
@@ -179,6 +195,31 @@ const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) 
           )}
         />
 
+        {selectedMethod === "bank_transfer" && (
+          <div className="p-4 border rounded-md bg-yellow-50 text-sm text-gray-800 space-y-2">
+            <p className="font-medium">Bank Transfer Details:</p>
+            <ul className="list-disc list-inside">
+              <li>Account Name: Green Sweep Initiative</li>
+              <li>Bank Name: EcoBank</li>
+              <li>Account Number: 1234567890</li>
+              <li>SWIFT Code: ECOCNGLA</li>
+            </ul>
+
+            <div className="mt-3 flex items-center space-x-2">
+              <input 
+                type="checkbox" 
+                id="confirmTransfer" 
+                checked={hasTransferred} 
+                onChange={() => setHasTransferred(prev => !prev)} 
+                className="h-4 w-4"
+              />
+              <label htmlFor="confirmTransfer" className="text-sm">
+                I have completed the transfer.
+              </label>
+            </div>
+          </div>
+        )}
+
         <FormField
           control={form.control}
           name="message"
@@ -202,7 +243,7 @@ const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) 
         <Button 
           type="submit" 
           className="w-full bg-foundation-accent hover:bg-foundation-highlight" 
-          disabled={isProcessing}
+          disabled={isProcessing || (selectedMethod === "bank_transfer" && !hasTransferred)}
         >
           {isProcessing ? (
             <>
