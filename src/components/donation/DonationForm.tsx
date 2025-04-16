@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart, CreditCard } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -20,9 +19,7 @@ const donationSchema = z.object({
     return !isNaN(num) && num > 0;
   }, { message: "Please enter a valid donation amount." }),
   message: z.string().optional(),
-  paymentMethod: z.enum(["credit_card", "paypal", "bank_transfer"], {
-    required_error: "Please select a payment method.",
-  }),
+  paymentMethod: z.literal("bank_transfer"),
 })
 
 interface DonationFormProps {
@@ -34,6 +31,7 @@ interface DonationFormProps {
 const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [showBankDetails, setShowBankDetails] = useState(false);
   
   const form = useForm<z.infer<typeof donationSchema>>({
     resolver: zodResolver(donationSchema),
@@ -42,27 +40,28 @@ const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) 
       email: "",
       amount: "50",
       message: "",
-      paymentMethod: "credit_card",
+      paymentMethod: "bank_transfer",
     },
   });
 
   const handleDonation = (values: z.infer<typeof donationSchema>) => {
     setIsProcessing(true);
     
-    // Simulate donation processing
-    setTimeout(() => {
-      setIsProcessing(false);
-      setIsSuccess(true);
-      
-      // Show success toast
-      toast.success("Donation successful", {
-        description: `Thank you for your $${values.amount} donation${projectName ? ` to ${projectName}` : ''}!`,
-      });
-      
-      if (onSuccess) {
-        onSuccess();
-      }
-    }, 1500);
+    // Show bank details instead of processing payment
+    setShowBankDetails(true);
+    setIsProcessing(false);
+    
+    // Show success toast
+    toast.success("Please complete your bank transfer", {
+      description: `Bank details have been provided for your $${values.amount} donation${projectName ? ` to ${projectName}` : ''}.`,
+    });
+  };
+
+  const handleConfirmation = () => {
+    setIsSuccess(true);
+    if (onSuccess) {
+      onSuccess();
+    }
   };
 
   if (isSuccess) {
@@ -82,6 +81,43 @@ const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) 
             className="border-green-500 text-green-600 hover:bg-green-50"
           >
             Make Another Donation
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (showBankDetails) {
+    return (
+      <Card className="w-full max-w-md mx-auto border-foundation-accent">
+        <CardContent className="pt-6">
+          <h3 className="text-xl font-bold text-center mb-4">Bank Transfer Details</h3>
+          <div className="space-y-4 mb-6">
+            <div className="bg-foundation-accent/10 p-4 rounded-md">
+              <p className="font-semibold text-foundation-accent">Bank Name</p>
+              <p>Universal Bank</p>
+            </div>
+            <div className="bg-foundation-accent/10 p-4 rounded-md">
+              <p className="font-semibold text-foundation-accent">Account Name</p>
+              <p>Lynda Mbah Foundation</p>
+            </div>
+            <div className="bg-foundation-accent/10 p-4 rounded-md">
+              <p className="font-semibold text-foundation-accent">Account Number</p>
+              <p>1234567890</p>
+            </div>
+            <div className="bg-foundation-accent/10 p-4 rounded-md">
+              <p className="font-semibold text-foundation-accent">Reference</p>
+              <p>{projectName ? `Donation-${projectName}` : 'Donation-General'}</p>
+            </div>
+          </div>
+          <p className="text-sm text-gray-500 mb-4">
+            Please use the reference above when making your transfer so we can properly allocate your donation.
+          </p>
+          <Button 
+            onClick={handleConfirmation}
+            className="w-full bg-foundation-accent hover:bg-foundation-highlight"
+          >
+            I've Completed My Transfer
           </Button>
         </CardContent>
       </Card>
@@ -139,45 +175,18 @@ const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) 
           )}
         />
 
-        <FormField
-          control={form.control}
-          name="paymentMethod"
-          render={({ field }) => (
-            <FormItem className="space-y-3">
-              <FormLabel>Payment Method</FormLabel>
-              <FormControl>
-                <RadioGroup
-                  onValueChange={field.onChange}
-                  defaultValue={field.value}
-                  className="flex flex-col space-y-1"
-                >
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="credit_card" />
-                    </FormControl>
-                    <FormLabel className="font-normal flex items-center">
-                      <CreditCard className="mr-2 h-4 w-4" />
-                      Credit/Debit Card
-                    </FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="paypal" />
-                    </FormControl>
-                    <FormLabel className="font-normal">PayPal</FormLabel>
-                  </FormItem>
-                  <FormItem className="flex items-center space-x-3 space-y-0">
-                    <FormControl>
-                      <RadioGroupItem value="bank_transfer" />
-                    </FormControl>
-                    <FormLabel className="font-normal">Bank Transfer</FormLabel>
-                  </FormItem>
-                </RadioGroup>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+        <div className="bg-gray-50 p-4 rounded-md mb-2">
+          <FormLabel className="mb-2 block">Payment Method</FormLabel>
+          <div className="flex items-center space-x-3">
+            <RadioGroupItem value="bank_transfer" id="bank_transfer" checked readOnly />
+            <FormLabel htmlFor="bank_transfer" className="font-normal cursor-pointer">
+              Bank Transfer
+            </FormLabel>
+          </div>
+          <p className="text-xs text-gray-500 mt-2">
+            You'll receive our bank details to complete your transfer.
+          </p>
+        </div>
 
         <FormField
           control={form.control}
@@ -210,7 +219,7 @@ const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) 
               <span className="animate-spin">●</span>
             </>
           ) : (
-            <>Donate Now<Heart className="ml-2" size={16} /></>
+            <>Continue<Heart className="ml-2" size={16} /></>
           )}
         </Button>
       </form>

@@ -1,9 +1,9 @@
 
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, ChevronDown } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import DonateButton from '@/components/ui/DonateButton';
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -58,7 +58,7 @@ const Navbar = () => {
               </li>
             ))}
           </ul>
-          <Button className="btn-donate">Donate Now</Button>
+          <DonateButton />
         </div>
 
         {/* Mobile Menu Button */}
@@ -83,7 +83,7 @@ const Navbar = () => {
               </li>
             ))}
             <li className="pt-2">
-              <Button className="btn-donate w-full">Donate Now</Button>
+              <DonateButton className="w-full" />
             </li>
           </ul>
         </div>
