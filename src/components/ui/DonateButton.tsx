@@ -9,6 +9,8 @@ interface DonateButtonProps {
   variant?: 'primary' | 'secondary' | 'outline';
   children?: React.ReactNode;
   onClick?: () => void;
+  projectId?: string;
+  projectName?: string;
 }
 
 const DonateButton = ({
@@ -17,6 +19,8 @@ const DonateButton = ({
   variant = 'primary',
   children = 'Donate Now',
   onClick,
+  projectId,
+  projectName,
 }: DonateButtonProps) => {
   const sizeClasses = {
     sm: 'px-4 py-1.5 text-sm',

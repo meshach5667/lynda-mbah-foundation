@@ -9,7 +9,8 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Card, CardContent } from "@/components/ui/card"
-import { Heart } from 'lucide-react';
+import { Heart, CreditCard } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
 const donationSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -19,6 +20,9 @@ const donationSchema = z.object({
     return !isNaN(num) && num > 0;
   }, { message: "Please enter a valid donation amount." }),
   message: z.string().optional(),
+  paymentMethod: z.enum(["credit_card", "paypal", "bank_transfer"], {
+    required_error: "Please select a payment method.",
+  }),
 })
 
 interface DonationFormProps {
@@ -38,6 +42,7 @@ const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) 
       email: "",
       amount: "50",
       message: "",
+      paymentMethod: "credit_card",
     },
   });
 
@@ -128,6 +133,46 @@ const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) 
                   placeholder="50" 
                   {...field} 
                 />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="paymentMethod"
+          render={({ field }) => (
+            <FormItem className="space-y-3">
+              <FormLabel>Payment Method</FormLabel>
+              <FormControl>
+                <RadioGroup
+                  onValueChange={field.onChange}
+                  defaultValue={field.value}
+                  className="flex flex-col space-y-1"
+                >
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="credit_card" />
+                    </FormControl>
+                    <FormLabel className="font-normal flex items-center">
+                      <CreditCard className="mr-2 h-4 w-4" />
+                      Credit/Debit Card
+                    </FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="paypal" />
+                    </FormControl>
+                    <FormLabel className="font-normal">PayPal</FormLabel>
+                  </FormItem>
+                  <FormItem className="flex items-center space-x-3 space-y-0">
+                    <FormControl>
+                      <RadioGroupItem value="bank_transfer" />
+                    </FormControl>
+                    <FormLabel className="font-normal">Bank Transfer</FormLabel>
+                  </FormItem>
+                </RadioGroup>
               </FormControl>
               <FormMessage />
             </FormItem>

@@ -19,6 +19,7 @@ export interface ProjectProps {
 
 const ProjectCard = ({ id, title, description, image, target, raised, endDate, category }: ProjectProps) => {
   const [showDonateDialog, setShowDonateDialog] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
   
   const progress = Math.min(100, Math.round((raised / target) * 100));
   const formattedTarget = target.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
@@ -26,7 +27,11 @@ const ProjectCard = ({ id, title, description, image, target, raised, endDate, c
   
   return (
     <>
-      <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg h-full flex flex-col">
+      <Card 
+        className="overflow-hidden transition-all duration-300 hover:shadow-lg h-full flex flex-col relative"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         <div className="h-48 overflow-hidden">
           <img 
             src={image} 
@@ -34,6 +39,18 @@ const ProjectCard = ({ id, title, description, image, target, raised, endDate, c
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
           />
         </div>
+        
+        {isHovered && (
+          <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center transition-opacity duration-300">
+            <Button 
+              className="bg-foundation-accent hover:bg-foundation-highlight text-white rounded-full px-6 py-3"
+              onClick={() => setShowDonateDialog(true)}
+            >
+              <Heart size={18} className="mr-2" />
+              Donate Now
+            </Button>
+          </div>
+        )}
         
         <CardHeader>
           <div className="flex justify-between items-center mb-2">
