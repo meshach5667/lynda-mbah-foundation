@@ -1,8 +1,13 @@
 
-import DonateButton from '@/components/ui/DonateButton';
+import { useState } from 'react';
 import { ArrowRight } from 'lucide-react';
+import DonateButton from '@/components/ui/DonateButton';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import DonationForm from '@/components/donation/DonationForm';
 
 const Donate = () => {
+  const [showDonateModal, setShowDonateModal] = useState(false);
+
   return (
     <section className="py-20 bg-white">
       <div className="container mx-auto px-4">
@@ -47,11 +52,21 @@ const Donate = () => {
                 size="lg" 
                 variant="outline" 
                 className="w-full md:w-auto"
+                onClick={() => setShowDonateModal(true)}
               />
             </div>
           </div>
         </div>
       </div>
+
+      <Dialog open={showDonateModal} onOpenChange={setShowDonateModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-center text-2xl mb-4">Make a General Donation</DialogTitle>
+          </DialogHeader>
+          <DonationForm onSuccess={() => setShowDonateModal(false)} />
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };
