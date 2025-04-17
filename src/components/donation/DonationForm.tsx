@@ -171,7 +171,7 @@ const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) 
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Donation Amount ($)</FormLabel>
+                  <FormLabel>Donation Amount (₦)</FormLabel>
                   <FormControl>
                     <Input
                       type="number"

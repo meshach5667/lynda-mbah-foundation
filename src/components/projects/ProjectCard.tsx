@@ -36,8 +36,8 @@ const ProjectCard = ({ id, title, description, image, target, raised: initialRai
   }, [id]);
   
   const progress = Math.min(100, Math.round((raised / target) * 100));
-  const formattedTarget = target.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
-  const formattedRaised = raised.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+  const formattedTarget = target.toLocaleString('en-US', { style: 'currency', currency: 'NGN' });
+  const formattedRaised = raised.toLocaleString('en-US', { style: 'currency', currency: 'NGN' });
   
   return (
     <>
