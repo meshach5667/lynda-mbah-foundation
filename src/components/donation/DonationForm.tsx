@@ -193,7 +193,7 @@ const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) 
               </div>
               
               <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-md text-sm mt-2">
-                <p><strong>Bank Name:</strong> Azenith bank</p>
+                <p><strong>Bank Name:</strong> Zenith bank</p>
                 <p><strong>Account Name:</strong> Lynda Oby Mbah</p>
                 <p><strong>Account Number:</strong> 1020065693</p>
                 <p><strong>Reference:</strong> Your Name or Email</p>
