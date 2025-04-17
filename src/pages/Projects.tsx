@@ -4,7 +4,7 @@ import { Helmet } from "react-helmet-async";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ProjectCard, { ProjectProps } from '@/components/projects/ProjectCard';
-import { supabase } from '@/lib/supabase';
+import { supabase, ensureDemoProjects } from '@/lib/supabase';
 import { Loader2 } from 'lucide-react';
 
 const Projects = () => {
@@ -15,6 +15,9 @@ const Projects = () => {
   useEffect(() => {
     const fetchProjects = async () => {
       try {
+        // First ensure we have demo projects
+        await ensureDemoProjects();
+        
         const { data, error } = await supabase
           .from('projects')
           .select('*')

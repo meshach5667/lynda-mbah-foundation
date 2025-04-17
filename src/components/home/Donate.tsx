@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { ArrowRight, Heart, Loader2 } from 'lucide-react';
 import DonateButton from '@/components/ui/DonateButton';
@@ -7,7 +6,8 @@ import DonationForm from '@/components/donation/DonationForm';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Link } from 'react-router-dom';
-import { supabase } from '@/lib/supabase';
+import { supabase, ensureDemoProjects } from '@/lib/supabase';
+import { Progress } from '@/components/ui/progress';
 
 interface FeaturedProject {
   id: string;
@@ -27,6 +27,9 @@ const Donate = () => {
   useEffect(() => {
     const fetchFeaturedProjects = async () => {
       try {
+        // First ensure we have demo projects
+        await ensureDemoProjects();
+        
         const { data, error } = await supabase
           .from('projects')
           .select('id, title, description, image_url, target, raised')
@@ -115,7 +118,7 @@ const Donate = () => {
             </div>
           </div>
         </div>
-
+        
         {/* Featured Projects Section */}
         <div className="mb-8 text-center">
           <h3 className="text-2xl md:text-3xl font-bold text-foundation-primary mb-2">Featured Projects</h3>
@@ -156,12 +159,10 @@ const Donate = () => {
                               {Math.round((project.raised / project.target) * 100)}%
                             </span>
                           </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2.5">
-                            <div 
-                              className="bg-foundation-primary h-2.5 rounded-full" 
-                              style={{ width: `${Math.min(100, Math.round((project.raised / project.target) * 100))}%` }}
-                            ></div>
-                          </div>
+                          <Progress 
+                            value={Math.min(100, Math.round((project.raised / project.target) * 100))}
+                            className="h-2.5" 
+                          />
                           <div className="flex justify-between mt-2 text-sm">
                             <span>Raised: <span className="font-bold">
                               ${project.raised.toLocaleString()}

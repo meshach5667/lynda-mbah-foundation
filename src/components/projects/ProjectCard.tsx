@@ -1,11 +1,12 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Heart, Goal, Calendar } from 'lucide-react';
 import DonationForm from '@/components/donation/DonationForm';
-import { supabase } from '@/lib/supabase';
+import { supabase, subscribeToDonationUpdates } from '@/lib/supabase';
+import { Progress } from '@/components/ui/progress';
 
 export interface ProjectProps {
   id: string;
@@ -18,9 +19,21 @@ export interface ProjectProps {
   category: string;
 }
 
-const ProjectCard = ({ id, title, description, image, target, raised, endDate, category }: ProjectProps) => {
+const ProjectCard = ({ id, title, description, image, target, raised: initialRaised, endDate, category }: ProjectProps) => {
   const [showDonateDialog, setShowDonateDialog] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
+  const [raised, setRaised] = useState(initialRaised);
+  
+  useEffect(() => {
+    // Set up real-time subscription for donation updates
+    const unsubscribe = subscribeToDonationUpdates(id, (newRaised) => {
+      setRaised(newRaised);
+    });
+    
+    return () => {
+      unsubscribe();
+    };
+  }, [id]);
   
   const progress = Math.min(100, Math.round((raised / target) * 100));
   const formattedTarget = target.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
@@ -73,12 +86,7 @@ const ProjectCard = ({ id, title, description, image, target, raised, endDate, c
               <span className="font-medium">Progress</span>
               <span className="font-bold text-foundation-primary">{progress}%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-2.5">
-              <div 
-                className="bg-foundation-primary h-2.5 rounded-full" 
-                style={{ width: `${progress}%` }}
-              ></div>
-            </div>
+            <Progress value={progress} className="h-2.5" />
             <div className="flex justify-between mt-2 text-sm">
               <span>Raised: <span className="font-bold">{formattedRaised}</span></span>
               <span>Goal: <span className="font-bold">{formattedTarget}</span></span>

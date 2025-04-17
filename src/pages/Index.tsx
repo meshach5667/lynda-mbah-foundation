@@ -1,5 +1,6 @@
 
 import { Helmet } from "react-helmet";
+import { useEffect } from "react";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import Hero from "@/components/home/Hero";
@@ -10,8 +11,14 @@ import Donate from "@/components/home/Donate";
 import Team from "@/components/home/Team";
 import News from "@/components/home/News";
 import Contact from "@/components/home/Contact";
+import { ensureDemoProjects } from "@/lib/supabase";
 
 const Index = () => {
+  useEffect(() => {
+    // Ensure demo projects exist when the home page loads
+    ensureDemoProjects();
+  }, []);
+
   return (
     <>
       <Helmet>
