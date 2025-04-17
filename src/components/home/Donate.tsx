@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import { ArrowRight, Heart, Loader2 } from 'lucide-react';
 import DonateButton from '@/components/ui/DonateButton';
@@ -165,10 +166,10 @@ const Donate = () => {
                           />
                           <div className="flex justify-between mt-2 text-sm">
                             <span>Raised: <span className="font-bold">
-                              ${project.raised.toLocaleString()}
+                              {project.raised.toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}
                             </span></span>
                             <span>Goal: <span className="font-bold">
-                              ${project.target.toLocaleString()}
+                              {project.target.toLocaleString('en-US', { style: 'currency', currency: 'NGN' })}
                             </span></span>
                           </div>
                         </div>
