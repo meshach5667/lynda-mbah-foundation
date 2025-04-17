@@ -1,7 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, ChevronDown } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -39,9 +38,16 @@ const Navbar = () => {
       scrolled ? "bg-white shadow-md py-2" : "bg-transparent py-4"
     )}>
       <div className="container mx-auto px-4 lg:px-8 flex justify-between items-center">
-        <Link to="/" className="flex items-center space-x-2">
-          <span className="text-2xl font-bold text-foundation-primary">Lynda Mbah</span>
-          <span className="text-xl font-medium text-foundation-secondary">Foundation</span>
+        <Link to="/" className="flex items-center space-x-3">
+          <img
+            src="/logo.jpeg"
+            alt="Foundation Logo"
+            className="h-10 w-auto"
+          />
+          <div className="flex flex-col leading-tight">
+            <span className="text-2xl font-bold text-foundation-primary">Lynda Mbah</span>
+            <span className="text-sm font-medium text-foundation-secondary">Foundation</span>
+          </div>
         </Link>
 
         {/* Desktop Menu */}

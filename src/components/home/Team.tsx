@@ -67,7 +67,7 @@ const Team = () => {
       name: "Lynda Mbah",
       role: "Founder & President",
       image: "https://randomuser.me/api/portraits/women/23.jpg",
-      bio: "With over 15 years of experience in community development, Lynda founded the organization with a vision to create sustainable change.",
+      bio: "With several years of experience in community development, Lynda founded the organization with a vision to create sustainable change.",
       socialLinks: {
         facebook: "#",
         twitter: "#",
