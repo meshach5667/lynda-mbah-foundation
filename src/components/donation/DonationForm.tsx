@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
@@ -16,6 +17,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart, CreditCard } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { supabase } from '@/lib/supabase';
 
 const donationSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -25,10 +27,7 @@ const donationSchema = z.object({
     return !isNaN(num) && num > 0;
   }, { message: "Please enter a valid donation amount." }),
   message: z.string().optional(),
-  paymentMethod: z.enum(["credit_card", "paypal", "bank_transfer"], {
-    required_error: "Please select a payment method.",
-  }),
-  transferConfirmation: z.string().optional(),
+  transferConfirmation: z.string().min(2, { message: "Please confirm your transfer." }),
 });
 
 interface DonationFormProps {
@@ -40,7 +39,6 @@ interface DonationFormProps {
 const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [showBankInfo, setShowBankInfo] = useState(false);
 
   const form = useForm<z.infer<typeof donationSchema>>({
     resolver: zodResolver(donationSchema),
@@ -49,17 +47,54 @@ const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) 
       email: "",
       amount: "50",
       message: "",
-      paymentMethod: "credit_card",
       transferConfirmation: "",
     },
   });
 
-  const handleDonation = (values: z.infer<typeof donationSchema>) => {
+  const handleDonation = async (values: z.infer<typeof donationSchema>) => {
     setIsProcessing(true);
 
-    // Simulate donation processing
-    setTimeout(() => {
-      setIsProcessing(false);
+    try {
+      const amount = parseFloat(values.amount);
+      
+      // Save donation to Supabase
+      const { data, error } = await supabase
+        .from('donations')
+        .insert([
+          {
+            name: values.name,
+            email: values.email,
+            amount,
+            message: values.message || null,
+            project_id: projectId || null,
+            project_name: projectName || null,
+            transfer_confirmation: values.transferConfirmation,
+            status: 'pending'
+          }
+        ])
+        .select();
+      
+      if (error) throw error;
+
+      // If this is a project donation, update the project's raised amount
+      if (projectId) {
+        // First get the current raised amount
+        const { data: projectData, error: projectError } = await supabase
+          .from('projects')
+          .select('raised')
+          .eq('id', projectId)
+          .single();
+          
+        if (!projectError && projectData) {
+          // Update the project with the new total
+          const newRaised = (projectData.raised || 0) + amount;
+          await supabase
+            .from('projects')
+            .update({ raised: newRaised })
+            .eq('id', projectId);
+        }
+      }
+
       setIsSuccess(true);
 
       toast.success("Donation successful", {
@@ -69,10 +104,15 @@ const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) 
       if (onSuccess) {
         onSuccess();
       }
-    }, 1500);
+    } catch (error) {
+      console.error('Error processing donation:', error);
+      toast.error("Donation failed", {
+        description: "There was an error processing your donation. Please try again.",
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
-
-  const watchPaymentMethod = form.watch("paymentMethod");
 
   return (
     <div className="w-full px-4 sm:px-6 md:px-8 max-w-2xl mx-auto">
@@ -146,64 +186,36 @@ const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) 
               )}
             />
 
+            <div className="bg-gray-50 p-4 rounded-md mb-2">
+              <div className="flex items-center space-x-3 py-2">
+                <CreditCard className="h-5 w-5 text-foundation-primary" />
+                <span className="font-medium">Bank Transfer</span>
+              </div>
+              
+              <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-md text-sm mt-2">
+                <p><strong>Bank Name:</strong> Azenith bank</p>
+                <p><strong>Account Name:</strong> Lynda Oby Mbah</p>
+                <p><strong>Account Number:</strong> 1020065693</p>
+                <p><strong>Reference:</strong> Your Name or Email</p>
+              </div>
+            </div>
+
             <FormField
               control={form.control}
-              name="paymentMethod"
+              name="transferConfirmation"
               render={({ field }) => (
-                <FormItem className="space-y-3">
-                  <FormLabel>Payment Method</FormLabel>
+                <FormItem>
+                  <FormLabel>Confirm You Have Transferred</FormLabel>
                   <FormControl>
-                    <RadioGroup
-                      onValueChange={(val) => {
-                        field.onChange(val);
-                        setShowBankInfo(val === "bank_transfer");
-                      }}
-                      defaultValue={field.value}
-                      className="flex flex-col space-y-1"
-                    >
-                    
-                      <FormItem className="flex items-center space-x-3 space-y-0">
-                        <FormControl>
-                          <RadioGroupItem value="bank_transfer" />
-                        </FormControl>
-                        <FormLabel className="font-normal">Bank Transfer</FormLabel>
-                      </FormItem>
-                    </RadioGroup>
+                    <Input
+                      placeholder="E.g., Done, I have sent it"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
               )}
             />
-
-            {watchPaymentMethod === "bank_transfer" && (
-              <>
-                <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 p-4 rounded-md text-sm">
-                  <p><strong>Bank Name:</strong> Azenith bank
-                  </p>
-                  <p><strong>Account Name:</strong>  Lynda Oby Mbah</p>
-                  <p><strong>Account Number:</strong> 1020065693
-                  </p>
-                  <p><strong>Reference:</strong> Your Name or Email</p>
-                </div>
-
-                <FormField
-                  control={form.control}
-                  name="transferConfirmation"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Confirm You Have Transferred</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder="E.g., Done, I have sent it"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </>
-            )}
 
             <FormField
               control={form.control}

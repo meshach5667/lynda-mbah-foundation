@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Heart, Goal, Calendar } from 'lucide-react';
 import DonationForm from '@/components/donation/DonationForm';
+import { supabase } from '@/lib/supabase';
 
 export interface ProjectProps {
   id: string;

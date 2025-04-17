@@ -1,44 +1,65 @@
 
-import { useState } from 'react';
-import { ArrowRight, Heart } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { ArrowRight, Heart, Loader2 } from 'lucide-react';
 import DonateButton from '@/components/ui/DonateButton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import DonationForm from '@/components/donation/DonationForm';
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@/components/ui/hover-card";
 import { Link } from 'react-router-dom';
+import { supabase } from '@/lib/supabase';
 
-// Sample featured projects
-const featuredProjects = [
-  {
-    id: "project-1",
-    title: "Clean Water Initiative",
-    description: "Bringing clean drinking water to rural communities",
-    image: "https://images.unsplash.com/photo-1551731409-43eb3e517a1a?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
-    target: 25000,
-    raised: 16750,
-  },
-  {
-    id: "project-2",
-    title: "Education for All",
-    description: "Supporting education through school construction",
-    image: "https://images.unsplash.com/photo-1577896851231-70ef18881754?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
-    target: 40000,
-    raised: 12800,
-  },
-  {
-    id: "project-3",
-    title: "Healthcare Outreach",
-    description: "Mobile healthcare clinics for remote areas",
-    image: "https://images.unsplash.com/photo-1504813184591-01572f98c85f?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=800&q=80",
-    target: 35000,
-    raised: 27500,
-  },
-];
+interface FeaturedProject {
+  id: string;
+  title: string;
+  description: string;
+  image: string;
+  target: number;
+  raised: number;
+}
 
 const Donate = () => {
   const [showDonateModal, setShowDonateModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState<{id: string, title: string} | null>(null);
+  const [featuredProjects, setFeaturedProjects] = useState<FeaturedProject[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchFeaturedProjects = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('projects')
+          .select('id, title, description, image_url, target, raised')
+          .eq('status', 'active')
+          .order('created_at', { ascending: false })
+          .limit(3);
+
+        if (error) {
+          throw error;
+        }
+
+        if (data) {
+          const formattedProjects = data.map(project => ({
+            id: project.id,
+            title: project.title,
+            description: project.description,
+            image: project.image_url,
+            target: project.target,
+            raised: project.raised || 0,
+          }));
+          setFeaturedProjects(formattedProjects);
+        }
+      } catch (err) {
+        console.error('Error fetching featured projects:', err);
+        // Fall back to empty array if there's an error
+        setFeaturedProjects([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFeaturedProjects();
+  }, []);
 
   const handleDonateClick = (project?: {id: string, title: string}) => {
     setSelectedProject(project || null);
@@ -102,63 +123,73 @@ const Donate = () => {
             Explore some of our ongoing initiatives and make a direct impact by supporting specific projects.
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {featuredProjects.map((project) => (
-              <HoverCard key={project.id}>
-                <HoverCardTrigger asChild>
-                  <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg h-full">
-                    <div className="h-48 overflow-hidden">
-                      <img 
-                        src={project.image} 
-                        alt={project.title} 
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    
-                    <CardContent className="p-6">
-                      <h4 className="text-xl font-bold mb-2">{project.title}</h4>
-                      <p className="text-gray-600 mb-4">{project.description}</p>
-                      
-                      <div className="mt-2">
-                        <div className="flex justify-between text-sm mb-1">
-                          <span className="font-medium">Progress</span>
-                          <span className="font-bold text-foundation-primary">
-                            {Math.round((project.raised / project.target) * 100)}%
-                          </span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2.5">
-                          <div 
-                            className="bg-foundation-primary h-2.5 rounded-full" 
-                            style={{ width: `${Math.min(100, Math.round((project.raised / project.target) * 100))}%` }}
-                          ></div>
-                        </div>
-                        <div className="flex justify-between mt-2 text-sm">
-                          <span>Raised: <span className="font-bold">
-                            ${project.raised.toLocaleString()}
-                          </span></span>
-                          <span>Goal: <span className="font-bold">
-                            ${project.target.toLocaleString()}
-                          </span></span>
-                        </div>
+          {loading ? (
+            <div className="flex justify-center items-center py-16">
+              <Loader2 className="h-8 w-8 animate-spin text-foundation-primary" />
+            </div>
+          ) : featuredProjects.length === 0 ? (
+            <div className="text-center py-8">
+              <p className="text-gray-600">No featured projects available at the moment.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {featuredProjects.map((project) => (
+                <HoverCard key={project.id}>
+                  <HoverCardTrigger asChild>
+                    <Card className="overflow-hidden transition-all duration-300 hover:shadow-lg h-full">
+                      <div className="h-48 overflow-hidden">
+                        <img 
+                          src={project.image} 
+                          alt={project.title} 
+                          className="w-full h-full object-cover"
+                        />
                       </div>
-                    </CardContent>
-                  </Card>
-                </HoverCardTrigger>
-                <HoverCardContent className="w-80 p-0 bg-white shadow-lg rounded-lg border border-gray-200">
-                  <div className="p-4 text-center">
-                    <h4 className="text-lg font-bold mb-2">{project.title}</h4>
-                    <p className="text-sm text-gray-600 mb-4">Help us reach our goal!</p>
-                    <button
-                      onClick={() => handleDonateClick({id: project.id, title: project.title})}
-                      className="px-4 py-2 bg-foundation-accent text-white rounded-full hover:bg-foundation-highlight transition-colors flex items-center justify-center mx-auto"
-                    >
-                      <Heart size={16} className="mr-2" /> Donate Now
-                    </button>
-                  </div>
-                </HoverCardContent>
-              </HoverCard>
-            ))}
-          </div>
+                      
+                      <CardContent className="p-6">
+                        <h4 className="text-xl font-bold mb-2">{project.title}</h4>
+                        <p className="text-gray-600 mb-4 line-clamp-2">{project.description}</p>
+                        
+                        <div className="mt-2">
+                          <div className="flex justify-between text-sm mb-1">
+                            <span className="font-medium">Progress</span>
+                            <span className="font-bold text-foundation-primary">
+                              {Math.round((project.raised / project.target) * 100)}%
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2.5">
+                            <div 
+                              className="bg-foundation-primary h-2.5 rounded-full" 
+                              style={{ width: `${Math.min(100, Math.round((project.raised / project.target) * 100))}%` }}
+                            ></div>
+                          </div>
+                          <div className="flex justify-between mt-2 text-sm">
+                            <span>Raised: <span className="font-bold">
+                              ${project.raised.toLocaleString()}
+                            </span></span>
+                            <span>Goal: <span className="font-bold">
+                              ${project.target.toLocaleString()}
+                            </span></span>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </HoverCardTrigger>
+                  <HoverCardContent className="w-80 p-0 bg-white shadow-lg rounded-lg border border-gray-200">
+                    <div className="p-4 text-center">
+                      <h4 className="text-lg font-bold mb-2">{project.title}</h4>
+                      <p className="text-sm text-gray-600 mb-4">Help us reach our goal!</p>
+                      <button
+                        onClick={() => handleDonateClick({id: project.id, title: project.title})}
+                        className="px-4 py-2 bg-foundation-accent text-white rounded-full hover:bg-foundation-highlight transition-colors flex items-center justify-center mx-auto"
+                      >
+                        <Heart size={16} className="mr-2" /> Donate Now
+                      </button>
+                    </div>
+                  </HoverCardContent>
+                </HoverCard>
+              ))}
+            </div>
+          )}
           
           <Link to="/projects" className="mt-8 inline-flex items-center text-foundation-primary hover:text-foundation-dark font-medium">
             View all projects <ArrowRight size={16} className="ml-1" />

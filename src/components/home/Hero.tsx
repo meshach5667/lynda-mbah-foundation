@@ -1,8 +1,13 @@
 
 import { ArrowRight } from 'lucide-react';
 import DonateButton from '@/components/ui/DonateButton';
+import { useState } from 'react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import DonationForm from '@/components/donation/DonationForm';
 
 const Hero = () => {
+  const [showDonateModal, setShowDonateModal] = useState(false);
+
   return (
     <section className="relative h-screen flex items-center">
       {/* Background Image */}
@@ -30,7 +35,7 @@ const Hero = () => {
             healthcare, and community empowerment across underserved regions.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 opacity-0 animate-fade-in" style={{animationDelay: '0.8s'}}>
-            <a href="#donate"><DonateButton size="lg" /></a>
+            <DonateButton size="lg" onClick={() => setShowDonateModal(true)} />
             <a 
               href="#about"
               className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300"
@@ -41,6 +46,19 @@ const Hero = () => {
           </div>
         </div>
       </div>
+
+      <Dialog open={showDonateModal} onOpenChange={setShowDonateModal}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle className="text-center text-2xl mb-4">
+              Make a Donation
+            </DialogTitle>
+          </DialogHeader>
+          <DonationForm 
+            onSuccess={() => setShowDonateModal(false)} 
+          />
+        </DialogContent>
+      </Dialog>
     </section>
   );
 };

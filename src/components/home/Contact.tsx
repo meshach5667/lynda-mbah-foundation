@@ -1,12 +1,13 @@
-
 import { useState } from 'react';
 import { MapPin, Phone, Mail, Send, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/lib/supabase';
 
 const Contact = () => {
   const { toast } = useToast();
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -22,31 +23,59 @@ const Contact = () => {
     }));
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Here you would typically send the form data to your backend
-    console.log("Form submitted:", formData);
+    setIsSubmitting(true);
     
-    toast({
-      title: "Message Sent!",
-      description: "Thank you for contacting us. We'll respond shortly.",
-      duration: 5000,
-    });
-    
-    setFormSubmitted(true);
-    
-    // Reset form after submission
-    setFormData({
-      name: '',
-      email: '',
-      subject: '',
-      message: ''
-    });
-    
-    // Reset the form submitted state after a delay
-    setTimeout(() => {
-      setFormSubmitted(false);
-    }, 5000);
+    try {
+      // Save to Supabase
+      const { error } = await supabase
+        .from('contact_messages')
+        .insert([
+          { 
+            name: formData.name,
+            email: formData.email,
+            subject: formData.subject,
+            message: formData.message
+          }
+        ]);
+        
+      if (error) {
+        throw error;
+      }
+      
+      toast({
+        title: "Message Sent!",
+        description: "Thank you for contacting us. We'll respond shortly.",
+        duration: 5000,
+      });
+      
+      setFormSubmitted(true);
+      
+      // Reset form after submission
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: ''
+      });
+      
+      // Reset the form submitted state after a delay
+      setTimeout(() => {
+        setFormSubmitted(false);
+      }, 5000);
+      
+    } catch (error) {
+      console.error('Error submitting contact form:', error);
+      toast({
+        variant: "destructive",
+        title: "Submission Failed",
+        description: "There was an error sending your message. Please try again.",
+        duration: 5000,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
   
   return (
@@ -117,6 +146,7 @@ const Contact = () => {
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-foundation-primary"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
                 <div>
@@ -129,6 +159,7 @@ const Contact = () => {
                     onChange={handleChange}
                     className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-foundation-primary"
                     required
+                    disabled={isSubmitting}
                   />
                 </div>
               </div>
@@ -143,6 +174,7 @@ const Contact = () => {
                   onChange={handleChange}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-foundation-primary"
                   required
+                  disabled={isSubmitting}
                 />
               </div>
               
@@ -156,21 +188,28 @@ const Contact = () => {
                   rows={5}
                   className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-foundation-primary"
                   required
+                  disabled={isSubmitting}
                 ></textarea>
               </div>
               
               <Button 
                 type="submit"
                 className="w-full bg-foundation-primary hover:bg-foundation-dark text-white font-bold py-3 rounded-md flex justify-center items-center space-x-2"
+                disabled={isSubmitting}
               >
                 {formSubmitted ? (
                   <>
-                    <CheckCircle className="h-5 w-5" />
+                    <CheckCircle className="h-5 w-5 mr-2" />
                     <span>Message Sent!</span>
+                  </>
+                ) : isSubmitting ? (
+                  <>
+                    <span className="mr-2 animate-spin">●</span>
+                    <span>Sending...</span>
                   </>
                 ) : (
                   <>
-                    <Send className="h-5 w-5" />
+                    <Send className="h-5 w-5 mr-2" />
                     <span>Send Message</span>
                   </>
                 )}
