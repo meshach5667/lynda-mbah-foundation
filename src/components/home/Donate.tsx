@@ -46,7 +46,7 @@ const Donate = () => {
   };
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20 bg-white" id='donate'>
       <div className="container mx-auto px-4">
         <div className="max-w-5xl mx-auto bg-gradient-to-r from-foundation-primary to-foundation-dark rounded-xl overflow-hidden shadow-xl mb-16">
           <div className="grid grid-cols-1 lg:grid-cols-2">

@@ -58,7 +58,7 @@ const Navbar = () => {
               </li>
             ))}
           </ul>
-          <Button className="btn-donate">Donate Now</Button>
+          <a href="#donate"><Button className="btn-donate">Donate Now</Button></a>
         </div>
 
         {/* Mobile Menu Button */}

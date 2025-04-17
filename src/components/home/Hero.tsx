@@ -30,7 +30,7 @@ const Hero = () => {
             healthcare, and community empowerment across underserved regions.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 opacity-0 animate-fade-in" style={{animationDelay: '0.8s'}}>
-            <DonateButton size="lg" />
+            <a href="#donate"><DonateButton size="lg" /></a>
             <a 
               href="#about"
               className="inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white bg-white bg-opacity-20 rounded-full hover:bg-opacity-30 transition-all duration-300"
