@@ -95,10 +95,25 @@ const DonationForm = ({ projectId, projectName, onSuccess }: DonationFormProps) 
         }
       }
 
+      // Send confirmation email
+      const { error: emailError } = await supabase.functions.invoke('send-donation-email', {
+        body: {
+          name: values.name,
+          email: values.email,
+          amount,
+          projectName,
+        },
+      });
+
+      if (emailError) {
+        console.error('Error sending confirmation email:', emailError);
+        // Don't throw error here to not block donation success
+      }
+
       setIsSuccess(true);
 
       toast.success("Donation successful", {
-        description: `Thank you for your $${values.amount} donation${projectName ? ` to ${projectName}` : ''}!`,
+        description: `Thank you for your ₦${values.amount} donation${projectName ? ` to ${projectName}` : ''}! A confirmation email has been sent to your inbox.`,
       });
 
       if (onSuccess) {
