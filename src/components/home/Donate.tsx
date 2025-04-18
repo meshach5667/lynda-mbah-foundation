@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { ArrowRight, Heart, Loader2 } from 'lucide-react';
 import DonateButton from '@/components/ui/DonateButton';
@@ -77,7 +76,7 @@ const Donate = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2">
             {/* Image */}
             <div className="h-64 lg:h-full bg-cover bg-center" style={{
-              backgroundImage: "url('https://images.unsplash.com/photo-1593113598332-cd288d649433?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80')"
+              backgroundImage: "url('https://images.unsplash.com/photo-1616427529156-6fbc16e7073b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80')"
             }}></div>
             
             {/* Content */}

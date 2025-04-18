@@ -10,7 +10,7 @@ const About = () => {
           <div className="relative">
             <div className="rounded-lg overflow-hidden shadow-xl">
               <img 
-                src="/about.jpeg" 
+                src="https://images.unsplash.com/photo-1576267423445-3ca38c0b5c3c?ixlib=rb-4.0.3&auto=format&fit=crop&w=1170&q=80" 
                 alt="Lynda Mbah Foundation Work" 
                 className="w-full h-[500px] object-cover"
               />

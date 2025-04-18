@@ -1,4 +1,3 @@
-
 import { Facebook, Twitter, Linkedin } from 'lucide-react';
 
 interface TeamMemberProps {
@@ -66,7 +65,7 @@ const Team = () => {
     {
       name: "Lynda Mbah",
       role: "Founder & President",
-      image: "https://randomuser.me/api/portraits/women/23.jpg",
+      image: "https://images.unsplash.com/photo-1608889476510-9a4359680694?ixlib=rb-4.0.3&auto=format&fit=crop&w=880&q=80",
       bio: "With several years of experience in community development, Lynda founded the organization with a vision to create sustainable change.",
       socialLinks: {
         facebook: "#",
@@ -77,7 +76,7 @@ const Team = () => {
     {
       name: "James Wilson",
       role: "Executive Director",
-      image: "https://randomuser.me/api/portraits/men/32.jpg",
+      image: "https://images.unsplash.com/photo-1614204424926-7e090bc44663?ixlib=rb-4.0.3&auto=format&fit=crop&w=880&q=80",
       bio: "James brings extensive experience in nonprofit management and has been leading our operations for the past 7 years.",
       socialLinks: {
         facebook: "#",
@@ -88,7 +87,7 @@ const Team = () => {
     {
       name: "Sarah Johnson",
       role: "Programs Director",
-      image: "https://randomuser.me/api/portraits/women/44.jpg",
+      image: "https://images.unsplash.com/photo-1593104097410-24d01035f507?ixlib=rb-4.0.3&auto=format&fit=crop&w=880&q=80",
       bio: "Sarah oversees our program implementation and has a background in international development and public health.",
       socialLinks: {
         facebook: "#",
@@ -99,7 +98,7 @@ const Team = () => {
     {
       name: "Michael Chen",
       role: "Finance Director",
-      image: "https://randomuser.me/api/portraits/men/67.jpg",
+      image: "https://images.unsplash.com/photo-1519085360753-5e26338f9dd8?ixlib=rb-4.0.3&auto=format&fit=crop&w=880&q=80",
       bio: "Michael manages our financial operations, ensuring accountability and transparency in all our financial activities.",
       socialLinks: {
         twitter: "#",
