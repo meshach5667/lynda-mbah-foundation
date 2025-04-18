@@ -1,4 +1,3 @@
-
 import { ArrowRight, Calendar, User } from 'lucide-react';
 
 interface NewsCardProps {
@@ -55,7 +54,7 @@ const News = () => {
     {
       title: "New School Building Completed in Rural Community",
       excerpt: "We are thrilled to announce the completion of a new school building that will serve over 300 children in a rural community.",
-      image: "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1173&q=80",
+      image: "https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80",
       date: "June 15, 2023",
       author: "Admin",
       category: "Education",
@@ -64,7 +63,7 @@ const News = () => {
     {
       title: "Healthcare Initiative Reaches 10,000 Beneficiaries",
       excerpt: "Our healthcare initiative has successfully reached a milestone of serving 10,000 people with essential medical services.",
-      image: "https://images.unsplash.com/photo-1576091160550-2173dba999ef?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+      image: "https://images.unsplash.com/photo-1530497610245-94d3c16cda28?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2070&q=80",
       date: "May 22, 2023",
       author: "Admin",
       category: "Healthcare",
@@ -73,7 +72,7 @@ const News = () => {
     {
       title: "Women Empowerment Workshop Series Launches",
       excerpt: "We're launching a series of workshops aimed at providing skills training and entrepreneurship support for women in underserved communities.",
-      image: "https://images.unsplash.com/photo-1573497620053-ea5300f94f21?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1170&q=80",
+      image: "https://images.unsplash.com/photo-1489171084589-9b5031ebcf9b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2031&q=80",
       date: "April 10, 2023",
       author: "Admin",
       category: "Women Empowerment",
