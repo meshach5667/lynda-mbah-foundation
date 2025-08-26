@@ -133,7 +133,7 @@ const Donate = () => {
             </div>
           ) : featuredProjects.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-gray-600">No featured projects available at the moment.</p>
+              <p className="text-gray-600">View featured projects here.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
